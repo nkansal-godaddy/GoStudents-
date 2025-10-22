@@ -64,8 +64,14 @@ export default function StudentsPage() {
     setIsSubmitting(true);
     
     try {
+      console.log('Starting sign-up process...', { email, schoolId });
+      
       // Create a proper JWT-like token for demo purposes
-      const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString('base64url');
+      const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" }))
+        .toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
       const payload = Buffer.from(JSON.stringify({
         sub: '104222', // Mock customer ID
         shopperId: '9449896', // Mock shopper ID
@@ -73,18 +79,28 @@ export default function StudentsPage() {
         accountName: email,
         exp: Math.floor(Date.now() / 1000) + (60 * 60 * 6), // 6 hours
         iat: Math.floor(Date.now() / 1000)
-      })).toString('base64url');
+      }))
+        .toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
       const signature = 'mock-signature';
       const mockJWT = `${header}.${payload}.${signature}`;
 
+      console.log('Generated JWT token:', mockJWT);
+
       // Set the mock JWT as auth_jomax cookie
-      document.cookie = `auth_jomax=${mockJWT}; path=/; max-age=${60 * 60 * 6}; secure; samesite=strict`;
+      document.cookie = `auth_jomax=${mockJWT}; path=/; max-age=${60 * 60 * 6}`;
+      
+      console.log('Cookie set, redirecting...');
       
       // Wait a moment for the cookie to be set, then redirect
       setTimeout(() => {
+        setIsSubmitting(false);
         window.location.href = `/students/offer?school=${schoolId}`;
       }, 100);
     } catch (err) {
+      console.error('Sign-up error:', err);
       setError('Sign-up failed. Please try again.');
       setIsSubmitting(false);
     }
