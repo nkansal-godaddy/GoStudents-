@@ -63,6 +63,10 @@ export default function GoStudentsPage() {
 
       if (data.status === 'ok') {
         setAlert({ type: 'success', message: data.message });
+        // Redirect to offer page after successful account creation
+        setTimeout(() => {
+          window.location.href = '/offer';
+        }, 2000);
       } else {
         setAlert({ type: 'error', message: data.message });
       }

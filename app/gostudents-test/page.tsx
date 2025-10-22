@@ -95,6 +95,10 @@ export default function GoStudentsTestPage() {
         
         if (result.status === 'ok') {
           setAlert({ type: 'success', message: result.message });
+          // Redirect to offer page after successful account creation
+          setTimeout(() => {
+            window.location.href = '/offer';
+          }, 2000);
         } else {
           setAlert({ type: 'error', message: result.message });
         }
@@ -111,6 +115,10 @@ export default function GoStudentsTestPage() {
 
         if (data.status === 'ok') {
           setAlert({ type: 'success', message: data.message });
+          // Redirect to offer page after successful account creation
+          setTimeout(() => {
+            window.location.href = '/offer';
+          }, 2000);
         } else {
           setAlert({ type: 'error', message: data.message });
         }

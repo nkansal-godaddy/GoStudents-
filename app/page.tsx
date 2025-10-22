@@ -25,7 +25,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
           <Link
             href="/gostudents"
@@ -63,6 +63,26 @@ export default function Home() {
               </p>
               <div className="text-green-600 font-medium group-hover:text-green-700">
                 Open Test Playground →
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/offer"
+            className="group bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
+                <span className="text-2xl">🎁</span>
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+                Offer Page
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Student offer claiming page with catalog query and order creation integration.
+              </p>
+              <div className="text-purple-600 font-medium group-hover:text-purple-700">
+                View Offer Page →
               </div>
             </div>
           </Link>
