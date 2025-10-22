@@ -146,12 +146,12 @@ export default function GoStudentsPage() {
                 <label htmlFor="school" className="block text-sm font-medium text-gray-700 mb-2">
                   Partner School
                 </label>
-                <select
-                  id="school"
-                  value={selectedSchool.id}
-                  onChange={(e) => handleSchoolChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
+                 <select
+                   id="school"
+                   value={selectedSchool.id}
+                   onChange={(e) => handleSchoolChange(e.target.value)}
+                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
+                 >
                   {SCHOOLS.map((school) => (
                     <option key={school.id} value={school.id}>
                       {school.name}
@@ -165,15 +165,15 @@ export default function GoStudentsPage() {
                 <label htmlFor="curriculum" className="block text-sm font-medium text-gray-700 mb-2">
                   Curriculum
                 </label>
-                <select
-                  id="curriculum"
-                  value={selectedCurriculum.id}
-                  onChange={(e) => {
-                    const curriculum = selectedSchool.curricula.find(c => c.id === e.target.value);
-                    if (curriculum) setSelectedCurriculum(curriculum);
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
+                 <select
+                   id="curriculum"
+                   value={selectedCurriculum.id}
+                   onChange={(e) => {
+                     const curriculum = selectedSchool.curricula.find(c => c.id === e.target.value);
+                     if (curriculum) setSelectedCurriculum(curriculum);
+                   }}
+                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
+                 >
                   {selectedSchool.curricula.map((curriculum) => (
                     <option key={curriculum.id} value={curriculum.id}>
                       {curriculum.name}
@@ -194,7 +194,7 @@ export default function GoStudentsPage() {
                     value={emailLocal}
                     onChange={(e) => setEmailLocal(e.target.value)}
                     placeholder="your.name"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                     className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
                     required
                   />
                   <span className="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-r-md">
@@ -208,7 +208,7 @@ export default function GoStudentsPage() {
                       value={customDomain}
                       onChange={(e) => setCustomDomain(e.target.value)}
                       placeholder="your-school.edu"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
                       required
                     />
                   </div>
@@ -220,14 +220,14 @@ export default function GoStudentsPage() {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                   Password
                 </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
+                 <input
+                   type="password"
+                   id="password"
+                   value={password}
+                   onChange={(e) => setPassword(e.target.value)}
+                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
+                   required
+                 />
                 <PasswordStrength password={password} />
               </div>
 
