@@ -31,7 +31,11 @@ export const SCHOOLS = [
     id: "other",
     name: "My school isn't listed",
     domain: "",
-    curricula: [{ id: "general", name: "General Track" }],
+    curricula: [
+      { id: "general", name: "General Track" },
+      { id: "security", name: "Website Security" },
+      { id: "ai-business", name: "Building Businesses with AI" }
+    ],
   },
 ] as const;
 
