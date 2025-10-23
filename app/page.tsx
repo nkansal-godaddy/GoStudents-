@@ -68,21 +68,41 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/offer"
+            href="/students"
             className="group bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
           >
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
-                <span className="text-2xl">🎁</span>
+                <span className="text-2xl">🎓</span>
               </div>
               <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-                Offer Page
+                Student Landing
               </h2>
               <p className="text-gray-600 mb-4">
-                Student offer claiming page with catalog query and order creation integration.
+                School selection and email signup with JWT authentication and curated offers.
               </p>
               <div className="text-purple-600 font-medium group-hover:text-purple-700">
-                View Offer Page →
+                View Student Flow →
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/test-jwt"
+            className="group bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
+                <span className="text-2xl">🔐</span>
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+                JWT Test
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Test JWT decoding from GoDaddy auth_jomax cookie with customerId and shopperId extraction.
+              </p>
+              <div className="text-orange-600 font-medium group-hover:text-orange-700">
+                Test JWT Decoding →
               </div>
             </div>
           </Link>
