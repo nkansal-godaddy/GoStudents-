@@ -23,9 +23,9 @@ export default function TestJWT() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">JWT Decoding Test</h1>
+        <h1 className="text-3xl font-bold mb-8 text-gray-900">JWT Decoding Test</h1>
         
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 text-gray-900">
           <h2 className="text-xl font-semibold mb-4">Auth Context State</h2>
           <div className="space-y-2">
             <p><strong>Is Authenticated:</strong> {isAuthenticated ? 'Yes' : 'No'}</p>
@@ -35,7 +35,7 @@ export default function TestJWT() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 text-gray-900">
           <h2 className="text-xl font-semibold mb-4">API Response</h2>
           <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto">
             {JSON.stringify(userInfo, null, 2)}
