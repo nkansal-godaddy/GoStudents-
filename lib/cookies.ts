@@ -42,7 +42,7 @@ export function setCookie(name: string, value: string, days: number = 6): void {
 export function clearAllCookies(): void {
   if (typeof document === 'undefined') return;
   
-  const cookies = ['customer_id', 'shopper_id', 'user_email', 'school_id', 'auth_jomax'];
+  const cookies = ['customer_id', 'shopper_id', 'user_email', 'school_id', 'auth_idp'];
   cookies.forEach(cookie => {
     document.cookie = `${cookie}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
   });

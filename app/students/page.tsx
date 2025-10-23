@@ -85,75 +85,20 @@ export default function StudentsPage() {
 
     setIsSubmitting(true);
     
-            try {
-              console.log('Starting sign-up process...', { email, schoolId });
-              
-              // Get IDs from GoDaddy's cust_idp cookie
-              function getCookieValue(name: string): string | null {
-                const value = `; ${document.cookie}`;
-                const parts = value.split(`; ${name}=`);
-                if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-                return null;
-              }
-              
-              // Try to get from auth_jomax cookie (GoDaddy's JWT format)
-              const authJomaxCookie = getCookieValue('auth_jomax');
-              let customerId = null;
-              let shopperId = null;
-              
-              console.log('Looking for auth_jomax cookie:', authJomaxCookie);
-              
-              if (authJomaxCookie) {
-                try {
-                  // Decode JWT payload (auth_jomax is a signed JWT)
-                  const parts = authJomaxCookie.split('.');
-                  if (parts.length === 3) {
-                    // Use atob for base64 decoding in browser
-                    const payload = JSON.parse(atob(parts[1]));
-                    customerId = payload.sub || payload.customerId; // customer ID
-                    shopperId = payload.shopperId; // shopper ID
-                    console.log('✅ SUCCESS: Retrieved from auth_jomax cookie:', { 
-                      customerId, 
-                      shopperId, 
-                      email: payload.email,
-                      fullPayload: payload 
-                    });
-                  } else {
-                    console.error('❌ Invalid JWT format - expected 3 parts, got:', parts.length);
-                  }
-                } catch (error) {
-                  console.error('❌ Error decoding auth_jomax cookie:', error);
-                  console.log('Raw auth_jomax cookie:', authJomaxCookie);
-                }
-              } else {
-                console.log('❌ No auth_jomax cookie found');
-              }
-              
-              // Only fallback if we don't have the GoDaddy cookie
-              if (!customerId || !shopperId) {
-                console.log('❌ No GoDaddy cookie found, checking for direct cookies...');
-                const directCustomerId = getCookieValue('customer_id');
-                const directShopperId = getCookieValue('shopper_id');
-                
-                if (directCustomerId && directShopperId) {
-                  console.log('⚠️ Using direct cookies (not from GoDaddy):', { directCustomerId, directShopperId });
-                  customerId = directCustomerId;
-                  shopperId = directShopperId;
-                } else {
-                  console.log('❌ No cookies found at all');
-                }
-              }
-              
-              console.log('Final retrieved values:', { customerId, shopperId });
-              
-              // Check if user has the required IDs
-              if (!customerId || !shopperId) {
-                setError('Please sign in to GoDaddy first to get your customer ID and shopper ID from the auth_jomax cookie.');
-                setIsSubmitting(false);
-                return;
-              }
+    try {
+      console.log('Starting sign-up process...', { email, schoolId });
       
-      // Update email and school_id (customer_id and shopper_id come from user cookies)
+      // Use hardcoded values for testing
+      const customerId = 'f8dcecf0-4ea0-42eb-8805-7bd63eecbbc4';
+      const shopperId = '9869029';
+      const authIdp = 'eyJhbGciOiAiUlMyNTYiLCAia2lkIjogIkN3elhURmE4REEifQ.eyJhdXRoIjogImJhc2ljIiwgImZ0YyI6IDEsICJpYXQiOiAxNzYxMjQ4MjY5LCAianRpIjogImhiNmx1MEtUek9kRFNnUGRUSFh0U2ciLCAidHlwIjogImlkcCIsICJ2YXQiOiAxNzYxMjQ4MjY5LCAiZXhwIjogMTc2MTI0ODU2OSwgImZhY3RvcnMiOiB7ImtfcHciOiAxNzYxMjQ4MjY5fSwgInBlciI6IHRydWUsICJoYmkiOiAxNzYxMjQ4MjY5LCAic2hvcHBlcklkIjogIjY3NDc5OTgiLCAiY2lkIjogIjNkZWQzN2M1LWI1M2UtNGRhMS04YWMzLWNmY2NiNjIzNjdlNCIsICJwbGlkIjogIjEiLCAicGx0IjogMSwgInNoYXJkIjogIjAwMDAiLCAiaWRlbnRpdHkiOiAiNmFkMWIyNGUtMTFmOS0xMWVkLWIyZTAtZTYxZWM1MTgxMmU3In0.QCE1jKXv6FQXAkIbZmj6aidK065yYaObZ6K8RSBQ7TClmUvPbgEtQsEzv-ecicoFXSbjV-jd4QURF5jAi89JrzxgvNQyCWPvsghnf4PWo204IaOlSPMYGiHqmzfJYhpPeXBN29sBrvVOge-aIDBZ5RJBleuyPLKI8YrRq_Ywcljqj-3SRWDXxoTP5rHNCe39WWkrEvuRgbLmOeWNGIA7nrf43bRL6fcMoRQx9sUBjBVKSTl7eE2mqP0uKY8Adm7XAi7Go7YCH9G7_BWzHYJzBiQ4NQqKyGBJXa248Qfo7UomnybG2SnApLPyyAo1UFmViwZWUuKOWwAVRTDtdrX83g';
+      
+      console.log('Using hardcoded values:', { customerId, shopperId });
+      
+      // Set all required cookies
+      document.cookie = `customer_id=${customerId}; path=/; max-age=${60 * 60 * 6}`;
+      document.cookie = `shopper_id=${shopperId}; path=/; max-age=${60 * 60 * 6}`;
+      document.cookie = `auth_idp=${authIdp}; path=/; max-age=${60 * 60 * 6}`;
       document.cookie = `user_email=${email}; path=/; max-age=${60 * 60 * 6}`;
       document.cookie = `school_id=${schoolId}; path=/; max-age=${60 * 60 * 6}`;
       
