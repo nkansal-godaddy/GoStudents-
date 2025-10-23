@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthProvider';
 import { useRouter } from 'next/navigation';
+// Email functionality moved to API route to avoid client-side nodemailer issues
 
 const SCHOOLS = [
   { id: 'asu', name: 'Arizona State University', domain: 'asu.edu', logo: '🏛️' },
-  { id: 'uarizona', name: 'University of Arizona', domain: 'arizona.edu', logo: '🌵' },
+  { id: 'uofa', name: 'University of Arizona', domain: 'arizona.edu', logo: '🌵' },
   { id: 'nau', name: 'Northern Arizona University', domain: 'nau.edu', logo: '🏔️' },
   { id: 'isbat', name: 'ISBAT University', domain: 'isbatuniversity.ac.ug', logo: '🌍' },
   { id: 'other', name: 'Other University', domain: null, logo: '🎓' }
@@ -95,6 +96,9 @@ export default function StudentsPage() {
     
     try {
       console.log('Starting sign-up process...', { email, schoolId });
+      
+      // Simple validation - no email sending here anymore
+      console.log('✅ Students signup successful - proceeding to offer selection');
       
       // Create a proper JWT-like token for demo purposes
       const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" }))
