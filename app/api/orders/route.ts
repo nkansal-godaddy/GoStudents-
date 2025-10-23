@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAuthJwt } from "@/lib/auth";
 
 // Helper function to extract customer ID from JWT token
 function getCustomerIdFromToken(ssoToken: string): string | null {
@@ -21,7 +22,11 @@ function getCustomerIdFromToken(ssoToken: string): string | null {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { ssoAuth, idempotentId, ...orderPayload } = body;
+    const { idempotentId, basketId, ...orderPayload } = body;
+
+    // Get the auth token from auth.ts (hardcoded value)
+    const ssoAuth = await getAuthJwt();
+    console.log('🔑 Using JWT Token from auth.ts');
 
     // Validate required fields
     if (!ssoAuth) {
@@ -38,9 +43,16 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!basketId) {
+      return NextResponse.json(
+        { error: "Basket ID is required" },
+        { status: 400 }
+      );
+    }
+
     // Try to extract customer ID from token, fallback to hardcoded value
     const extractedCustomerId = getCustomerIdFromToken(ssoAuth);
-    const customerId = extractedCustomerId || '3ded37c5-b53e-4da1-8ac3-cfccb62367e4';
+    const customerId = extractedCustomerId || 'f8dcecf0-4ea0-42eb-8805-7bd63eecbbc4';
     
     if (extractedCustomerId) {
       console.log('Using customer ID from token:', extractedCustomerId);
@@ -49,10 +61,30 @@ export async function POST(req: Request) {
     }
     
     // Call the orders shim API from the server side (no CORS issues)
-    // Using "cart" as the literal endpoint instead of a dynamic basketId
-    const orderUrl = `https://orders-shim-ext.cp.api.test.godaddy.com/v2/customers/${customerId}/orders/cart/add`;
-    console.log('Calling orders API:', orderUrl);
-    console.log('Order payload:', JSON.stringify(orderPayload, null, 2));
+    // Using dynamic basketId in the URL
+    const orderUrl = `https://orders-shim-ext.cp.api.test.godaddy.com/v2/customers/${customerId}/orders/${basketId}/add`;
+    
+    console.log('🚀 ===== CALLING ORDERS API =====');
+    console.log('📍 URL:', orderUrl);
+    console.log('📦 Full Payload:', JSON.stringify(orderPayload, null, 2));
+    console.log('🔑 Headers:');
+    console.log('   - Content-Type: application/json');
+    console.log('   - Idempotent-Id:', idempotentId);
+    console.log('📋 Request Details:');
+    console.log('   - Customer ID:', customerId);
+    console.log('   - Basket ID:', basketId);
+    console.log('   - Currency:', orderPayload.currency);
+    console.log('   - Market ID:', orderPayload.marketId);
+    console.log('   - Items Count:', orderPayload.items?.length || 0);
+    if (orderPayload.items && orderPayload.items.length > 0) {
+      orderPayload.items.forEach((item: any, index: number) => {
+        console.log(`   - Item ${index + 1}:`, {
+          key: item.key,
+          catalogInstanceKey: item.item?.catalogInstanceKey
+        });
+      });
+    }
+    console.log('==================================');
     
     const orderResponse = await fetch(orderUrl, {
       method: 'POST',
