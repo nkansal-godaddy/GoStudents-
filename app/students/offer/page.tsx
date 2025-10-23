@@ -218,9 +218,7 @@ export default function OfferPage() {
 
       // Show success toast and redirect
       setShowToast(true);
-      setTimeout(() => {
-        window.location.href = 'https://account.test-godaddy.com/products';
-      }, 1500);
+      
 
     } catch (err) {
       console.error('Error in order creation flow:', err);
@@ -254,6 +252,9 @@ export default function OfferPage() {
     
     // Hide toast after 3 seconds
     setTimeout(() => setShowToast(false), 3000);
+    setTimeout(() => {
+      window.location.href = 'https://account.test-godaddy.com/products';
+    }, 1500);
   };
 
   return (
