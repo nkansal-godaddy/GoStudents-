@@ -5,7 +5,6 @@ export type UserContext = {
   customerId?: string;
   shopperId?: string;
   email?: string;
-  schoolId?: string;
   isAuthenticated: boolean;
 };
 
@@ -15,26 +14,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserContext>({ isAuthenticated: false });
 
   useEffect(() => {
-    function getCookieValue(name: string): string | null {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-      return null;
+    async function fetchDecoded() {
+      try {
+        const res = await fetch("/api/user-info");
+        const data = await res.json();
+        setUser({
+          customerId: data.customerId,
+          shopperId: data.shopperId,
+          email: data.email,
+          isAuthenticated: !!data.customerId,
+        });
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+        setUser({ isAuthenticated: false });
+      }
     }
-
-    // Get user info from cookies
-    const customerId = getCookieValue('customer_id');
-    const shopperId = getCookieValue('shopper_id');
-    const email = getCookieValue('user_email');
-    const schoolId = getCookieValue('school_id');
-
-    setUser({
-      customerId: customerId || undefined,
-      shopperId: shopperId || undefined,
-      email: email || undefined,
-      schoolId: schoolId || undefined,
-      isAuthenticated: !!(customerId && shopperId),
-    });
+    fetchDecoded();
   }, []);
 
   return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;
