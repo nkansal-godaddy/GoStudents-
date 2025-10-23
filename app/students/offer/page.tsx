@@ -10,30 +10,30 @@ const CURATED_OFFERS = [
   {
     id: "hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential",
     title: "Web Design Mastery",
-    subtitle: "Build stunning websites from scratch",
+    subtitle: "GIT 414 | Web Site Design and Internet/Web Technologies",
     icon: "🎨",
     gradient: "from-blue-500 to-purple-600",
-    badge: "6-month Free Trial",
+    badge: "Free Access for the Semester",
     description: "Complete web design toolkit for students learning web development",
     price: "$0.00",
     originalPrice: "$299.00",
     benefits: [
-      "Web Hosting Economy plan (6 months free)",
+      "WebHosting Economy plan (6 months free)",
       "Conversations Essentials for customer engagement", 
       "Professional web hosting infrastructure",
       "Customer communication tools",
       "Perfect for portfolio projects"
     ],
-    tools: ["Web Hosting", "Conversations", "SSL Certificate"]
+    tools: ["WebHosting", "Conversations", "SSL Certificate"]
   },
   {
     id: "hackathonGoStudentsWebsiteSecurity-mwpBasic-nortonSmallBusinessStandard", 
     title: "Website Security",
-    subtitle: "Protect your digital assets",
+    subtitle: "CSE 466 | Computer Systems Security",
     icon: "🔒",
     gradient: "from-green-500 to-teal-600",
-    badge: "6-month Free Trial",
-    description: "Essential security tools for protecting websites and business data",
+    badge: "Free Access for the Semester",
+    description: "Essential security tools to help you learn the vulnerabilities of the internet",
     price: "$0.00",
     originalPrice: "$199.00",
     benefits: [
@@ -48,11 +48,11 @@ const CURATED_OFFERS = [
   {
     id: "hackathonGoStudentsBusineesAi-wamCommerce-airoAllAccess",
     title: "AI Business Builder",
-    subtitle: "Launch with artificial intelligence",
+    subtitle: "CIS 404 | Programming for Analytics and AI in Business",
     icon: "🤖",
     gradient: "from-orange-500 to-red-600", 
-    badge: "6-month Free Trial",
-    description: "AI-powered business tools for modern entrepreneurship",
+    badge: "Free Access for the Semester",
+    description: "AI-powered tools to jumpstart your career and creative projects",
     price: "$0.00",
     originalPrice: "$399.00",
     benefits: [
@@ -67,9 +67,10 @@ const CURATED_OFFERS = [
 ];
 
 const STATS = [
-  { number: "6 Months", label: "Free Trial" },
-  { number: "$0", label: "Upfront Cost" },
-  { number: "24/7", label: "Support" }
+  { number: '50K+', label: 'Students Helped' },
+  { number: '6 Months', label: 'Free for Your Semester' },
+  { number: '$0', label: 'Upfront Cost' },
+  { number: '24/7', label: 'Support' }
 ];
 
 export default function OfferPage() {
@@ -125,12 +126,12 @@ export default function OfferPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#1BDBDB]/40 to-[#0FA5A5]/40 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[#1BDBDB]/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-10 w-96 h-96 bg-[#0FA5A5]/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-[#17C7C7]/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
       </div>
 
       {/* Floating Particles */}
@@ -182,7 +183,7 @@ export default function OfferPage() {
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
             Student Offers
             <span className="block text-3xl md:text-4xl text-purple-200 font-light">
-              Exclusive 6-Month Free Trials
+              Exclusive Free Access for the Semester
             </span>
           </h1>
           
@@ -192,7 +193,7 @@ export default function OfferPage() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-8"
           >
-            Build your digital future with professional tools — completely free for students.
+            Build your digital future with professional tools — from first assignment to first client.
           </motion.p>
 
           {/* User Info */}
@@ -214,7 +215,7 @@ export default function OfferPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16"
           >
             {STATS.map((stat, index) => (
               <motion.div
@@ -222,12 +223,12 @@ export default function OfferPage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 1 + index * 0.1 }}
-                className="text-center bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10"
+                className="text-center bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
               >
-                <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                <div className="text-3xl md:text-4xl font-bold text-white mb-2">
                   {stat.number}
                 </div>
-                <div className="text-blue-200 text-xs font-medium">
+                <div className="text-gray-200 text-sm font-medium">
                   {stat.label}
                 </div>
               </motion.div>
@@ -241,11 +242,11 @@ export default function OfferPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mb-12 bg-yellow-500/20 backdrop-blur-sm border border-yellow-400/30 rounded-2xl p-6"
+            className="mb-12 bg-red-500/20 backdrop-blur-sm border border-red-400/30 rounded-2xl p-6"
           >
             <div className="flex items-center justify-center space-x-3">
               <span className="text-2xl">⚠️</span>
-              <p className="text-yellow-200 text-center font-medium">
+              <p className="text-red-200 text-center font-medium">
                 Please sign up to claim your free student offers
               </p>
             </div>
@@ -337,19 +338,16 @@ export default function OfferPage() {
                   disabled={!isAuthenticated}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg ${
+                  className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg flex items-center justify-center space-x-3 border border-gray-700 relative z-10 ${
                     isAuthenticated 
                       ? `bg-gradient-to-r ${offer.gradient} text-white hover:shadow-xl hover:shadow-purple-500/25` 
-                      : 'bg-gray-500/50 text-gray-400 cursor-not-allowed'
+                      : 'bg-black hover:bg-gray-800 text-white'
                   }`}
                 >
                   {isAuthenticated ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <span>Get Started</span>
-                      <span className="text-xl">🚀</span>
-                    </div>
+                    <span className="text-white">Get Started</span>
                   ) : (
-                    'Sign in to select'
+                    <span className="text-white">Sign In To Select</span>
                   )}
                 </motion.button>
               </div>
@@ -365,7 +363,7 @@ export default function OfferPage() {
           className="text-center"
         >
           <p className="text-blue-200 text-lg mb-4">
-            Ready to build something amazing? Choose your curriculum and start building.
+            Ready to ace your assignments? Select your course and start building with professional tools from GoDaddy.
           </p>
           <div className="flex items-center justify-center space-x-4 text-sm text-blue-300">
             <div className="flex items-center space-x-2">

@@ -16,9 +16,9 @@ const SCHOOLS = [
 
 const BENEFITS = [
   {
-    icon: '🚀',
+    icon: '💻',
     title: 'Professional Tools',
-    description: '6-month free trials on industry-standard web development tools'
+    description: '6-month free access for students on industry-standard web development tools'
   },
   {
     icon: '🔒',
@@ -28,7 +28,7 @@ const BENEFITS = [
   {
     icon: '🤖',
     title: 'AI Business Tools',
-    description: 'Cutting-edge AI tools to build and grow your business'
+    description: 'Get experience with cutting-edge AI tools to enhance your projects and build your portfolio'
   },
   {
     icon: '💼',
@@ -39,7 +39,7 @@ const BENEFITS = [
 
 const STATS = [
   { number: '50K+', label: 'Students Helped' },
-  { number: '6 Months', label: 'Free Trial' },
+  { number: '6 Months', label: 'Free for Your Semester' },
   { number: '$0', label: 'Upfront Cost' },
   { number: '24/7', label: 'Support' }
 ];
@@ -176,12 +176,12 @@ export default function StudentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#1BDBDB]/40 to-[#0FA5A5]/40 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[#1BDBDB]/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-10 w-96 h-96 bg-[#0FA5A5]/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-[#17C7C7]/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
       </div>
 
       {/* Floating Particles */}
@@ -247,7 +247,7 @@ export default function StudentsPage() {
           
           <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
             GoStudents
-            <span className="block text-4xl md:text-5xl text-blue-200 font-light">
+            <span className="block text-4xl md:text-5xl text-gray-200 font-light">
               by GoDaddy
             </span>
           </h1>
@@ -256,11 +256,11 @@ export default function StudentsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-gray-100 max-w-3xl mx-auto leading-relaxed"
           >
             Build your digital future with professional tools — from first assignment to first client.
-            <span className="block text-lg text-blue-200 mt-2">
-              Get 6 months of premium web development tools completely free.
+            <span className="block text-lg text-gray-200 mt-2 max-w-2xl mx-auto">
+              Get 6 months of premium web development tools completely free - Available exclusively through participating universities!
             </span>
           </motion.p>
         </motion.div>
@@ -283,7 +283,7 @@ export default function StudentsPage() {
               <div className="text-3xl md:text-4xl font-bold text-white mb-2">
                 {stat.number}
               </div>
-              <div className="text-blue-200 text-sm font-medium">
+              <div className="text-gray-200 text-sm font-medium">
                 {stat.label}
               </div>
             </motion.div>
@@ -316,7 +316,7 @@ export default function StudentsPage() {
                   <h3 className="text-xl font-semibold text-white mb-2">
                     {benefit.title}
                   </h3>
-                  <p className="text-blue-200 leading-relaxed">
+                  <p className="text-gray-200 leading-relaxed">
                     {benefit.description}
                   </p>
                 </div>
@@ -335,7 +335,7 @@ export default function StudentsPage() {
               <h2 className="text-3xl font-bold text-white mb-4">
                 Get Started Today
               </h2>
-              <p className="text-blue-200">
+              <p className="text-gray-200">
                 Join thousands of students building their digital future
               </p>
             </div>
@@ -350,7 +350,7 @@ export default function StudentsPage() {
                   id="school"
                   value={schoolId}
                   onChange={(e) => setSchoolId(e.target.value)}
-                  className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 backdrop-blur-sm"
+                  className="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-300 focus:ring-2 focus:ring-[#1BDBDB] focus:border-[#1BDBDB] transition-all duration-300 backdrop-blur-sm"
                   required
                 >
                   <option value="" className="text-gray-600">Choose your school...</option>
@@ -372,7 +372,7 @@ export default function StudentsPage() {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full px-4 py-4 bg-white/10 border rounded-xl text-white placeholder-blue-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 backdrop-blur-sm ${
+                  className={`w-full px-4 py-4 bg-white/10 border rounded-xl text-white placeholder-gray-300 focus:ring-2 focus:ring-[#1BDBDB] focus:border-[#1BDBDB] transition-all duration-300 backdrop-blur-sm ${
                     error ? 'border-red-400' : 'border-white/20'
                   }`}
                   placeholder="your@email.com"
@@ -395,17 +395,17 @@ export default function StudentsPage() {
                 disabled={isSubmitting || !schoolId || !email}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center space-x-3"
+                className="w-full bg-black text-white py-4 px-6 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center space-x-3 border border-gray-700 relative z-10"
               >
                 {isSubmitting ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Signing up...</span>
+                    <span className="text-white">Signing up...</span>
                   </div>
                 ) : (
                   <>
-                    <span className="text-2xl">🚀</span>
-                    <span>Get Your Free Tools</span>
+                    <span className="text-2xl text-white">🚀</span>
+                    <span className="text-white">Get Your Free Tools</span>
                   </>
                 )}
               </motion.button>
@@ -413,15 +413,15 @@ export default function StudentsPage() {
 
             {/* Trust Indicators */}
             <div className="mt-8 pt-6 border-t border-white/20">
-              <div className="flex items-center justify-center space-x-6 text-blue-200 text-sm">
+              <div className="flex items-center justify-center space-x-6 text-gray-200 text-sm">
                 <div className="flex items-center space-x-2">
-                  <span className="text-green-400">✓</span>
+                  <span className="text-[#1BDBDB]">✓</span>
                   <span>No Credit Card Required</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-green-400">✓</span>
-                  <span>Instant Access</span>
-                </div>
+                       <div className="flex items-center space-x-2">
+                         <span className="text-[#1BDBDB]">✓</span>
+                         <span>Instant Access for Enrolled Students</span>
+                       </div>
               </div>
             </div>
           </motion.div>
@@ -434,7 +434,7 @@ export default function StudentsPage() {
           transition={{ duration: 0.8, delay: 1.2 }}
           className="text-center mt-16"
         >
-          <p className="text-blue-200 text-lg">
+          <p className="text-gray-200 text-lg">
             Ready to build something amazing? Join the next generation of digital creators.
           </p>
         </motion.div>
