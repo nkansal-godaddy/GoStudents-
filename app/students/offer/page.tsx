@@ -227,6 +227,33 @@ export default function OfferPage() {
       setError(err instanceof Error ? err.message : 'Failed to process order. Please try again.');
       setIsProcessing(false);
     }
+    // Send curriculum-specific welcome email
+    try {
+      const response = await fetch('/api/curriculum-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          offerId,
+          schoolId,
+          email,
+          customerId,
+          shopperId
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.status === 'ok') {
+        console.log('✅ Curriculum-specific email sent successfully:', data.message);
+      } else {
+        console.error('❌ Email sending failed:', data.message);
+      }
+    } catch (error) {
+      console.error('❌ Error sending curriculum email:', error);
+    }
+    
+    // Hide toast after 3 seconds
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   return (

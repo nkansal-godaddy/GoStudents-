@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthProvider';
 import { useRouter } from 'next/navigation';
+// Email functionality moved to API route to avoid client-side nodemailer issues
 
 const SCHOOLS = [
   { id: 'asu', name: 'Arizona State University', domain: 'asu.edu', logo: '🏛️' },
-  { id: 'uarizona', name: 'University of Arizona', domain: 'arizona.edu', logo: '🌵' },
+  { id: 'uofa', name: 'University of Arizona', domain: 'arizona.edu', logo: '🌵' },
   { id: 'nau', name: 'Northern Arizona University', domain: 'nau.edu', logo: '🏔️' },
   { id: 'isbat', name: 'ISBAT University', domain: 'isbatuniversity.ac.ug', logo: '🌍' },
   { id: 'other', name: 'Other University', domain: null, logo: '🎓' }
@@ -99,6 +100,10 @@ export default function StudentsPage() {
       document.cookie = `customer_id=${customerId}; path=/; max-age=${60 * 60 * 6}`;
       document.cookie = `shopper_id=${shopperId}; path=/; max-age=${60 * 60 * 6}`;
       document.cookie = `auth_idp=${authIdp}; path=/; max-age=${60 * 60 * 6}`;
+      // Simple validation - no email sending here anymore
+      console.log('✅ Students signup successful - proceeding to offer selection');
+      
+      // Update email and school_id (customer_id and shopper_id come from user cookies)
       document.cookie = `user_email=${email}; path=/; max-age=${60 * 60 * 6}`;
       document.cookie = `school_id=${schoolId}; path=/; max-age=${60 * 60 * 6}`;
       

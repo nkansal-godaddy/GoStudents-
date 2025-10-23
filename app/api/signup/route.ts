@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { SCHOOLS, type School, type Curriculum } from "@/lib/schools";
+import { sendWelcomeEmail } from "@/lib/email-generator";
 
 export async function POST(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -16,5 +18,43 @@ export async function POST(req: Request) {
   if (outcome === "error") {
     return NextResponse.json({ status: "error", message: "Mock API: forced error" }, { status: 400 });
   }
-  return NextResponse.json({ status: "ok", message: "Account created! Verify your student email." });
+
+  // Send welcome email after successful account creation
+  try {
+    const school = SCHOOLS.find(s => s.id === body.schoolId);
+    const curriculum = school?.curricula.find(c => c.id === body.curriculumId);
+    
+    if (school && curriculum) {
+      const emailRecipients = [
+        "dann@godaddy.com",
+        "qwu@godaddy.com", 
+        "sbhandarkar@godaddy.com",
+        "nkansal@godaddy.com",
+        "dann@spohn.me"
+      ];
+
+      const emailContext = {
+        school,
+        curriculum,
+        email: body.email,
+        studentName: body.email.split('@')[0] // Extract name from email
+      };
+
+      const emailResult = await sendWelcomeEmail(emailRecipients, emailContext);
+      
+      if (emailResult.success) {
+        console.log('✅ Welcome email sent successfully:', emailResult.message);
+      } else {
+        console.log('⚠️ Welcome email failed:', emailResult.message);
+      }
+    }
+  } catch (error) {
+    console.error('Error in welcome email process:', error);
+    // Don't fail the signup if email fails
+  }
+
+  return NextResponse.json({ 
+    status: "ok", 
+    message: "Account created! Welcome email sent to the team. Verify your student email." 
+  });
 }

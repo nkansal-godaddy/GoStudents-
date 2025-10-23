@@ -16,6 +16,7 @@ A production-quality Next.js application showcasing student onboarding flows wit
 - **Form Validation** - Client-side validation with accessible error states
 - **Accessibility** - ARIA labels, keyboard navigation, and screen reader support
 - **Mock API Testing** - Built-in testing interface with latency simulation
+- **AI-Generated Email System** - Curriculum-specific welcome emails with personalized content
 
 ## 📁 Project Structure
 
@@ -28,16 +29,27 @@ A production-quality Next.js application showcasing student onboarding flows wit
 │   │   └── page.tsx            # Landing page with signup form
 │   ├── gostudents-test/
 │   │   └── page.tsx            # Test playground with controls
+│   ├── students/
+│   │   ├── page.tsx            # Students signup page
+│   │   └── offer/
+│   │       └── page.tsx        # Curriculum selection page
 │   └── api/
-│       └── signup/
-│           └── route.ts        # Mock API endpoint
+│       ├── signup/
+│       │   └── route.ts        # Mock API endpoint
+│       ├── students-signup/
+│       │   └── route.ts        # Students signup API
+│       └── curriculum-signup/
+│           └── route.ts        # Curriculum-specific email API
 ├── components/
 │   ├── Benefit.tsx             # Benefit card component
 │   ├── Alerts.tsx              # Success/error alert components
 │   └── FormParts.tsx           # Password strength component
 ├── lib/
 │   ├── schools.ts              # School and curriculum data
-│   └── password.ts             # Password validation utilities
+│   ├── password.ts             # Password validation utilities
+│   └── email-generator.ts      # AI email generation system
+├── EMAIL_SETUP.md              # Email configuration guide
+├── env.example                 # Environment variables template
 └── package.json
 ```
 
@@ -73,6 +85,62 @@ A production-quality Next.js application showcasing student onboarding flows wit
 - **Same form as landing page** for consistent testing
 - **Log management** with clear logs functionality
 
+### Students Page (`/students`)
+- **Student-focused signup form** with:
+  - School selection dropdown (ASU, UArizona, NAU, ISBAT, or custom)
+  - Email input with domain validation
+  - Authentication and JWT token generation
+  - Redirect to curriculum selection page
+- **No email sending** - emails are sent only when curriculum is selected
+
+### Students Offer Page (`/students/offer`)
+- **Curriculum selection interface** with:
+  - Three curated curriculum options:
+    - **Web Design** - Web Hosting Economy, Conversations Essentials
+    - **Website Security** - MWP Basic, Norton Small Business Standard  
+    - **Building Businesses with AI** - WAM Commerce, Airo Plus
+  - **Curriculum-specific email sending** when "Select" button is clicked
+  - **Personalized welcome emails** with AI-generated content based on selected curriculum
+
+## 📧 Email System
+
+### AI-Generated Welcome Emails
+The application includes a sophisticated email system that sends personalized welcome emails when students select their curriculum:
+
+#### **Email Features:**
+- **AI Name Parsing** - Intelligently extracts and formats student names from email addresses
+- **Curriculum-Specific Content** - Each curriculum generates tailored email content
+- **School Context** - Emails include school-specific benefits and information
+- **BCC Recipients** - Emails sent to team members via BCC for privacy
+- **SMTP Integration** - Real email sending via Nodemailer with Gmail SMTP
+
+#### **Supported Name Formats:**
+- `firstname.lastname@domain.edu` → "Hi Firstname!"
+- `firstname_lastname@domain.edu` → "Hi Firstname!"
+- `firstname-lastname@domain.edu` → "Hi Firstname!"
+- `firstname+lastname@domain.edu` → "Hi Firstname!"
+- `initial.lastname@domain.edu` → "Hello Lastname!"
+- `firstname@domain.edu` → "Hi Firstname!" (for names >4 characters)
+
+#### **Curriculum-Specific Content:**
+- **Web Design**: Focus on HTML/CSS/JS projects and portfolio development
+- **Website Security**: Emphasis on security best practices and monitoring tools
+- **AI Business**: Highlighting AI-powered business solutions and e-commerce platforms
+
+#### **Email Recipients:**
+- dann@godaddy.com
+- qwu@godaddy.com
+- sbhandarkar@godaddy.com
+- nkansal@godaddy.com
+- dann@spohn.me
+
+### Email Setup
+See `EMAIL_SETUP.md` for detailed configuration instructions including:
+- SMTP server setup
+- Gmail App Password configuration
+- Environment variable setup
+- Testing and troubleshooting
+
 ## 🔧 API Endpoints
 
 ### POST `/api/signup`
@@ -101,6 +169,52 @@ Mock API endpoint for testing signup flows.
   "message": "Account created! Verify your student email."
 }
 ```
+
+### POST `/api/students-signup`
+Students signup API endpoint (no email sending).
+
+**Request Body:**
+```json
+{
+  "schoolId": "asu",
+  "email": "student@asu.edu"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "ok|error",
+  "message": "Students signup successful! Please select your curriculum to receive your welcome email."
+}
+```
+
+### POST `/api/curriculum-signup`
+Curriculum-specific email sending API endpoint.
+
+**Request Body:**
+```json
+{
+  "offerId": "hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential",
+  "schoolId": "asu",
+  "email": "student@asu.edu",
+  "customerId": "104222",
+  "shopperId": "9449896"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "ok|error",
+  "message": "Curriculum-specific welcome email sent for Web Design!"
+}
+```
+
+**Supported Offer IDs:**
+- `hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential` → Web Design
+- `hackathonGoStudentsWebsiteSecurity-mwpBasic-nortonSmallBusinessStandard` → Website Security
+- `hackathonGoStudentsBusineesAi-wamCommerce-airoAllAccess` → Building Businesses with AI
 
 ## 🎨 Design System
 
@@ -255,16 +369,39 @@ npx next dev
 
 ### API Testing
 ```bash
-# Test success scenario
+# Test original signup API
 curl -X POST http://localhost:3000/api/signup \
   -H "Content-Type: application/json" \
   -d '{"schoolId":"asu","curriculumId":"web101","email":"test@asu.edu","password":"test123"}'
 
-# Test error scenario
-curl -X POST "http://localhost:3000/api/signup?outcome=error" \
+# Test students signup API (no email)
+curl -X POST http://localhost:3000/api/students-signup \
   -H "Content-Type: application/json" \
-  -d '{"schoolId":"asu","curriculumId":"web101","email":"test@asu.edu","password":"test123"}'
+  -d '{"schoolId":"asu","email":"test@asu.edu"}'
+
+# Test curriculum-specific email API
+curl -X POST http://localhost:3000/api/curriculum-signup \
+  -H "Content-Type: application/json" \
+  -d '{"offerId":"hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential","schoolId":"asu","email":"test@asu.edu","customerId":"104222","shopperId":"9449896"}'
 ```
+
+### Email Testing
+1. **Setup Email Configuration**:
+   - Copy `env.example` to `.env.local`
+   - Configure SMTP settings (see `EMAIL_SETUP.md`)
+   - Test with Gmail App Password
+
+2. **Test Email Flow**:
+   - Navigate to `/students`
+   - Select school and enter email
+   - Click "Get Your Free Tools" → No email sent
+   - Navigate to `/students/offer`
+   - Click any "Select" button → Email sent with curriculum-specific content
+
+3. **Verify Email Content**:
+   - Check recipient inboxes for personalized emails
+   - Verify AI name parsing works correctly
+   - Confirm curriculum-specific content is included
 
 ## 📋 Acceptance Criteria
 
@@ -291,11 +428,21 @@ curl -X POST "http://localhost:3000/api/signup?outcome=error" \
 - [x] API integration when test mode is off
 - [x] Clear logs functionality
 
-### ✅ API Endpoint (`/api/signup`)
-- [x] Accepts POST requests with JSON payload
+### ✅ API Endpoints
+- [x] `/api/signup` - Accepts POST requests with JSON payload
+- [x] `/api/students-signup` - Students signup without email sending
+- [x] `/api/curriculum-signup` - Curriculum-specific email sending
 - [x] Supports query parameters for testing
 - [x] Returns appropriate success/error responses
 - [x] Implements configurable latency simulation
+
+### ✅ Email System
+- [x] AI name parsing from email addresses
+- [x] Curriculum-specific email content generation
+- [x] SMTP integration with Gmail
+- [x] BCC email sending to team members
+- [x] Email sending triggered on curriculum selection
+- [x] Comprehensive email setup documentation
 
 ## 🎯 Key Features Implemented
 
@@ -316,6 +463,13 @@ curl -X POST "http://localhost:3000/api/signup?outcome=error" \
 - **Component Architecture**: Reusable, well-structured components
 - **Testing Interface**: Comprehensive testing tools for development
 - **Mock API**: No external dependencies for testing
+
+### Email System
+- **AI Name Parsing**: Intelligent extraction and formatting of student names
+- **Curriculum-Specific Content**: Tailored email content based on selected learning path
+- **SMTP Integration**: Real email sending with Gmail SMTP
+- **BCC Privacy**: Team notifications without exposing recipient lists
+- **Comprehensive Documentation**: Detailed setup and troubleshooting guides
 
 ## 🔮 Future Enhancements
 
