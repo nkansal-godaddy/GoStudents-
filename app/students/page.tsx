@@ -65,18 +65,10 @@ export default function StudentsPage() {
     const selectedSchool = SCHOOLS.find(s => s.id === schoolId);
     if (!selectedSchool) return 'Please select a school';
     
-    if (selectedSchool.id === 'other') {
-      // For "Other", just check it's a valid email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return 'Please enter a valid email address';
-      }
-    } else {
-      // For specific schools, check domain
-      const expectedDomain = selectedSchool.domain;
-      if (!email.endsWith(`@${expectedDomain}`)) {
-        return `Please enter a valid ${selectedSchool.name} email address (ending in @${expectedDomain})`;
-      }
+    // Just check it's a valid email format - no domain restrictions
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return 'Please enter a valid email address';
     }
     
     return null;
@@ -94,39 +86,82 @@ export default function StudentsPage() {
 
     setIsSubmitting(true);
     
-    try {
-      console.log('Starting sign-up process...', { email, schoolId });
+            try {
+              console.log('Starting sign-up process...', { email, schoolId });
+              
+              // Get IDs from GoDaddy's cust_idp cookie
+              function getCookieValue(name: string): string | null {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+                return null;
+              }
+              
+              // Try to get from auth_jomax cookie (GoDaddy's JWT format)
+              const authJomaxCookie = getCookieValue('auth_jomax');
+              let customerId = null;
+              let shopperId = null;
+              
+              console.log('Looking for auth_jomax cookie:', authJomaxCookie);
+              
+              if (authJomaxCookie) {
+                try {
+                  // Decode JWT payload (auth_jomax is a signed JWT)
+                  const parts = authJomaxCookie.split('.');
+                  if (parts.length === 3) {
+                    // Use atob for base64 decoding in browser
+                    const payload = JSON.parse(atob(parts[1]));
+                    customerId = payload.sub || payload.customerId; // customer ID
+                    shopperId = payload.shopperId; // shopper ID
+                    console.log('✅ SUCCESS: Retrieved from auth_jomax cookie:', { 
+                      customerId, 
+                      shopperId, 
+                      email: payload.email,
+                      fullPayload: payload 
+                    });
+                  } else {
+                    console.error('❌ Invalid JWT format - expected 3 parts, got:', parts.length);
+                  }
+                } catch (error) {
+                  console.error('❌ Error decoding auth_jomax cookie:', error);
+                  console.log('Raw auth_jomax cookie:', authJomaxCookie);
+                }
+              } else {
+                console.log('❌ No auth_jomax cookie found');
+              }
+              
+              // Only fallback if we don't have the GoDaddy cookie
+              if (!customerId || !shopperId) {
+                console.log('❌ No GoDaddy cookie found, checking for direct cookies...');
+                const directCustomerId = getCookieValue('customer_id');
+                const directShopperId = getCookieValue('shopper_id');
+                
+                if (directCustomerId && directShopperId) {
+                  console.log('⚠️ Using direct cookies (not from GoDaddy):', { directCustomerId, directShopperId });
+                  customerId = directCustomerId;
+                  shopperId = directShopperId;
+                } else {
+                  console.log('❌ No cookies found at all');
+                }
+              }
+              
+              console.log('Final retrieved values:', { customerId, shopperId });
+              
+              // Check if user has the required IDs
+              if (!customerId || !shopperId) {
+                setError('Please sign in to GoDaddy first to get your customer ID and shopper ID from the auth_jomax cookie.');
+                setIsSubmitting(false);
+                return;
+              }
       
       // Simple validation - no email sending here anymore
       console.log('✅ Students signup successful - proceeding to offer selection');
       
-      // Create a proper JWT-like token for demo purposes
-      const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" }))
-        .toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
-      const payload = Buffer.from(JSON.stringify({
-        sub: '104222', // Mock customer ID
-        shopperId: '9449896', // Mock shopper ID
-        email: email,
-        accountName: email,
-        exp: Math.floor(Date.now() / 1000) + (60 * 60 * 6), // 6 hours
-        iat: Math.floor(Date.now() / 1000)
-      }))
-        .toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
-      const signature = 'mock-signature';
-      const mockJWT = `${header}.${payload}.${signature}`;
-
-      console.log('Generated JWT token:', mockJWT);
-
-      // Set the mock JWT as auth_jomax cookie
-      document.cookie = `auth_jomax=${mockJWT}; path=/; max-age=${60 * 60 * 6}`;
+      // Update email and school_id (customer_id and shopper_id come from user cookies)
+      document.cookie = `user_email=${email}; path=/; max-age=${60 * 60 * 6}`;
+      document.cookie = `school_id=${schoolId}; path=/; max-age=${60 * 60 * 6}`;
       
-      console.log('Cookie set, redirecting...');
+      console.log('Cookies set successfully');
       
       // Wait a moment for the cookie to be set, then redirect
       setTimeout(() => {
@@ -330,7 +365,7 @@ export default function StudentsPage() {
               {/* Email Input */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-white mb-3">
-                  School Email Address
+                  Email Address
                 </label>
                 <input
                   type="email"
@@ -340,7 +375,7 @@ export default function StudentsPage() {
                   className={`w-full px-4 py-4 bg-white/10 border rounded-xl text-white placeholder-blue-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 backdrop-blur-sm ${
                     error ? 'border-red-400' : 'border-white/20'
                   }`}
-                  placeholder="student@school.edu"
+                  placeholder="your@email.com"
                   required
                 />
                 {error && (
@@ -360,15 +395,18 @@ export default function StudentsPage() {
                 disabled={isSubmitting || !schoolId || !email}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center space-x-3"
               >
                 {isSubmitting ? (
-                  <div className="flex items-center justify-center space-x-2">
+                  <div className="flex items-center space-x-2">
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     <span>Signing up...</span>
                   </div>
                 ) : (
-                  'Get Your Free Tools 🚀'
+                  <>
+                    <span className="text-2xl">🚀</span>
+                    <span>Get Your Free Tools</span>
+                  </>
                 )}
               </motion.button>
             </form>
