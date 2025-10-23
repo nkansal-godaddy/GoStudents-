@@ -87,25 +87,6 @@ export default function Home() {
             </div>
           </Link>
 
-          <Link
-            href="/test-jwt"
-            className="group bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
-          >
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
-                <span className="text-2xl">🔐</span>
-              </div>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-                JWT Test
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Test JWT decoding from GoDaddy auth_jomax cookie with customerId and shopperId extraction.
-              </p>
-              <div className="text-orange-600 font-medium group-hover:text-orange-700">
-                Test JWT Decoding →
-              </div>
-            </div>
-          </Link>
         </motion.div>
 
         <motion.div
@@ -147,6 +128,28 @@ export default function Home() {
                 </ul>
               </div>
             </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-12 text-center"
+        >
+          <div className="flex space-x-4 justify-center">
+            <Link
+              href="/debug-cust-idp"
+              className="inline-block bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Debug cust_idp Cookie
+            </Link>
+            <Link
+              href="/test-cookie"
+              className="inline-block bg-blue-800 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Test Cookie Setting
+            </Link>
           </div>
         </motion.div>
       </div>
