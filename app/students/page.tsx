@@ -96,16 +96,16 @@ export default function StudentsPage() {
       
       console.log('Using hardcoded values:', { customerId, shopperId });
       
-      // Set all required cookies
-      document.cookie = `customer_id=${customerId}; path=/; max-age=${60 * 60 * 6}`;
-      document.cookie = `shopper_id=${shopperId}; path=/; max-age=${60 * 60 * 6}`;
-      document.cookie = `auth_idp=${authIdp}; path=/; max-age=${60 * 60 * 6}`;
+      // Set all required cookies as session cookies (expire when browser closes)
+      document.cookie = `customer_id=${customerId}; path=/`;
+      document.cookie = `shopper_id=${shopperId}; path=/`;
+      document.cookie = `auth_idp=${authIdp}; path=/`;
       // Simple validation - no email sending here anymore
       console.log('✅ Students signup successful - proceeding to offer selection');
       
       // Update email and school_id (customer_id and shopper_id come from user cookies)
-      document.cookie = `user_email=${email}; path=/; max-age=${60 * 60 * 6}`;
-      document.cookie = `school_id=${schoolId}; path=/; max-age=${60 * 60 * 6}`;
+      document.cookie = `user_email=${email}; path=/`;
+      document.cookie = `school_id=${schoolId}; path=/`;
       
       console.log('Cookies set successfully');
       
