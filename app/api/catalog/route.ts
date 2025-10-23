@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
+import { getAuthJwt } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { ssoAuth, ...catalogPayload } = body;
-
+    const catalogPayload = body;
+    
+    // Get the auth token from auth.ts (hardcoded value)
+    const ssoAuth = await getAuthJwt();
+    console.log('🔑1.*** Full JWT Token from auth.ts:', ssoAuth);
+    
     // Validate required fields
     if (!ssoAuth) {
       return NextResponse.json(
@@ -13,15 +18,29 @@ export async function POST(req: Request) {
       );
     }
 
+    // Log request details before calling the API
+    const catalogUrl = 'https://catalog-query-ext.cp.api.test.godaddy.com/v2/catalog/offers?rateForDisplay=true';
+    const headers = {
+      'Authorization': `sso-jwt ${ssoAuth}`,
+      'Content-Type': 'application/json'
+    };
+    
+    console.log('🚀 ===== CALLING CATALOG API =====');
+    console.log('📍 URL:', catalogUrl);
+    console.log('📦 Payload:', JSON.stringify(catalogPayload, null, 2));
+    console.log('🔑 Headers:');
+    console.log('   - Content-Type:', 'application/json');
+    console.log('   - Authorization (first 50 chars):', `sso-jwt ${ssoAuth?.substring(0, 50)}...`);
+    console.log('🔑 Full JWT Token:', ssoAuth);
+    console.log('🔑 JWT Token Length:', ssoAuth?.length);
+    console.log('==================================');
+
     // Call the catalog API from the server side (no CORS issues)
     const catalogResponse = await fetch(
-      'https://catalog-query-ext.cp.api.test.godaddy.com/v2/catalog/offers?rateForDisplay=true',
+      catalogUrl,
       {
         method: 'POST',
-        headers: {
-          'Authorization': `sso-jwt ${ssoAuth}`,
-          'Content-Type': 'application/json'
-        },
+        headers,
         body: JSON.stringify(catalogPayload)
       }
     );
@@ -35,6 +54,14 @@ export async function POST(req: Request) {
     } catch {
       // If not JSON, return as text
       if (!catalogResponse.ok) {
+        // Log JWT token on 401 errors
+        if (catalogResponse.status === 401) {
+          console.error('❌ Catalog API 401 Unauthorized Error');
+          console.error('JWT Token used:', ssoAuth);
+          console.error('JWT Token length:', ssoAuth?.length);
+          console.error('First 50 chars:', ssoAuth?.substring(0, 50));
+          console.error('Last 50 chars:', ssoAuth?.substring(ssoAuth.length - 50));
+        }
         return NextResponse.json(
           { error: `API Error (${catalogResponse.status}): ${responseText}` },
           { status: catalogResponse.status }
@@ -45,6 +72,15 @@ export async function POST(req: Request) {
 
     // Return the response from the catalog API
     if (!catalogResponse.ok) {
+      // Log JWT token on 401 errors
+      if (catalogResponse.status === 401) {
+        console.error('❌ Catalog API 401 Unauthorized Error');
+        console.error('JWT Token used:', ssoAuth);
+        console.error('JWT Token length:', ssoAuth?.length);
+        console.error('First 50 chars:', ssoAuth?.substring(0, 50));
+        console.error('Last 50 chars:', ssoAuth?.substring(ssoAuth.length - 50));
+        console.error('Response body:', responseData);
+      }
       return NextResponse.json(
         responseData,
         { status: catalogResponse.status }

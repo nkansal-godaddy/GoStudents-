@@ -73,12 +73,28 @@ const STATS = [
   { number: '24/7', label: 'Support' }
 ];
 
+// Hardcoded values for API calls
+const HARDCODED_CUSTOMER_ID = 'f8dcecf0-4ea0-42eb-8805-7bd63eecbbc4';
+const HARDCODED_SHOPPER_ID = '9869029';
+const HARDCODED_AUTH_IDP = 'eyJhbGciOiAiUlMyNTYiLCAia2lkIjogIkN3elhURmE4REEifQ.eyJhdXRoIjogImJhc2ljIiwgImZ0YyI6IDEsICJpYXQiOiAxNzYxMjQ4MjY5LCAianRpIjogImhiNmx1MEtUek9kRFNnUGRUSFh0U2ciLCAidHlwIjogImlkcCIsICJ2YXQiOiAxNzYxMjQ4MjY5LCAiZXhwIjogMTc2MTI0ODU2OSwgImZhY3RvcnMiOiB7ImtfcHciOiAxNzYxMjQ4MjY5fSwgInBlciI6IHRydWUsICJoYmkiOiAxNzYxMjQ4MjY5LCAic2hvcHBlcklkIjogIjY3NDc5OTgiLCAiY2lkIjogIjNkZWQzN2M1LWI1M2UtNGRhMS04YWMzLWNmY2NiNjIzNjdlNCIsICJwbGlkIjogIjEiLCAicGx0IjogMSwgInNoYXJkIjogIjAwMDAiLCAiaWRlbnRpdHkiOiAiNmFkMWIyNGUtMTFmOS0xMWVkLWIyZTAtZTYxZWM1MTgxMmU3In0.QCE1jKXv6FQXAkIbZmj6aidK065yYaObZ6K8RSBQ7TClmUvPbgEtQsEzv-ecicoFXSbjV-jd4QURF5jAi89JrzxgvNQyCWPvsghnf4PWo204IaOlSPMYGiHqmzfJYhpPeXBN29sBrvVOge-aIDBZ5RJBleuyPLKI8YrRq_Ywcljqj-3SRWDXxoTP5rHNCe39WWkrEvuRgbLmOeWNGIA7nrf43bRL6fcMoRQx9sUBjBVKSTl7eE2mqP0uKY8Adm7XAi7Go7YCH9G7_BWzHYJzBiQ4NQqKyGBJXa248Qfo7UomnybG2SnApLPyyAo1UFmViwZWUuKOWwAVRTDtdrX83g';
+
+// Helper function to generate UUID
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 export default function OfferPage() {
   const searchParams = useSearchParams();
   const schoolId = searchParams.get('school') || '';
   const { customerId, shopperId, email, isAuthenticated } = useAuth();
   const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Log decoded details for verification
   useEffect(() => {
@@ -94,8 +110,124 @@ export default function OfferPage() {
 
   const handleSelectOffer = async (offerId: string) => {
     setSelectedOfferId(offerId);
-    setShowToast(true);
+    setIsProcessing(true);
+    setError(null);
     
+    try {
+      console.log('=== Starting Order Creation Flow ===');
+      console.log('Curated Offer ID:', offerId);
+
+      // Step 1: Call Catalog API
+      console.log('Step 1: Calling Catalog API...');
+      const catalogResponse = await fetch('/api/catalog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currency: "USD",
+          marketId: "en-US",
+          curatedOfferId: offerId,
+          term: {
+            termType: "MONTH",
+            numberOfTerms: 12
+          }
+        })
+      });
+
+      // Check: Only proceed if Catalog API returns 200 OK
+      if (!catalogResponse.ok) {
+        const errorData = await catalogResponse.json();
+        throw new Error(errorData.error || `Catalog API failed with status: ${catalogResponse.status}`);
+      }
+
+      const catalogData = await catalogResponse.json();
+      console.log('Catalog API response:', catalogData);
+
+      const catalogInstanceKey = catalogData.plans?.[0]?.catalogInstanceKey;
+      if (!catalogInstanceKey) {
+        throw new Error('No catalog instance key found in response');
+      }
+      console.log('✓ Catalog API success, catalogInstanceKey:', catalogInstanceKey);
+
+      // Generate basketId UUID (will be used for both Orders API and FulfillFree API)
+      const basketId = generateUUID();
+      console.log('Generated Basket ID:', basketId);
+
+      // Step 2: Call Orders API
+      console.log('Step 2: Calling Orders API...');
+      const idempotentId = generateUUID();
+      const itemKey = generateUUID();
+
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          basketId,
+          idempotentId,
+          currency: "USD",
+          marketId: "en-US",
+          items: [
+            {
+              key: itemKey,
+              item: {
+                catalogInstanceKey: catalogInstanceKey
+              }
+            }
+          ]
+        })
+      });
+
+      // Check: Only proceed if Orders API returns 200 OK
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json();
+        throw new Error(errorData.error || `Orders API failed with status: ${orderResponse.status}`);
+      }
+
+      const orderData = await orderResponse.json();
+      console.log('✓ Orders API success');
+
+      // Step 3: Call FulfillFree API using the same basketId as orderId
+      console.log('Step 3: Calling FulfillFree API...');
+      const fulfillIdempotentId = generateUUID();
+
+      const fulfillResponse = await fetch('/api/fulfillFree', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          customerId: HARDCODED_CUSTOMER_ID,
+          orderId: basketId, // Using the same basketId as orderId
+          idempotentId: fulfillIdempotentId
+        })
+      });
+
+      // Check: Only redirect if FulfillFree API returns 200 OK
+      if (!fulfillResponse.ok) {
+        const errorData = await fulfillResponse.json();
+        throw new Error(errorData.error || `FulfillFree API failed with status: ${fulfillResponse.status}`);
+      }
+
+      const fulfillData = await fulfillResponse.json();
+      console.log('✓ FulfillFree API success');
+      console.log('=== Order Completed Successfully ===');
+      console.log('Basket ID / Order ID:', basketId);
+      console.log('Customer ID:', HARDCODED_CUSTOMER_ID);
+
+      // Show success toast and redirect
+      setShowToast(true);
+      setTimeout(() => {
+        window.location.href = 'https://account.test-godaddy.com/products';
+      }, 1500);
+
+    } catch (err) {
+      console.error('Error in order creation flow:', err);
+      setError(err instanceof Error ? err.message : 'Failed to process order. Please try again.');
+      setIsProcessing(false);
+    }
     // Send curriculum-specific welcome email
     try {
       const response = await fetch('/api/curriculum-signup', {
@@ -253,6 +385,22 @@ export default function OfferPage() {
           </motion.div>
         )}
 
+        {/* Error Banner */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12 bg-red-500/20 backdrop-blur-sm border border-red-400/30 rounded-2xl p-6"
+          >
+            <div className="flex items-center justify-center space-x-3">
+              <span className="text-2xl">❌</span>
+              <p className="text-red-200 text-center font-medium">
+                {error}
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Offers Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
           {CURATED_OFFERS.map((offer, index) => (
@@ -335,16 +483,21 @@ export default function OfferPage() {
                 {/* Action Button */}
                 <motion.button
                   onClick={() => handleSelectOffer(offer.id)}
-                  disabled={!isAuthenticated}
+                  disabled={!isAuthenticated || isProcessing}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg flex items-center justify-center space-x-3 border border-gray-700 relative z-10 ${
-                    isAuthenticated 
+                    isAuthenticated && !isProcessing
                       ? `bg-gradient-to-r ${offer.gradient} text-white hover:shadow-xl hover:shadow-purple-500/25` 
                       : 'bg-black hover:bg-gray-800 text-white'
                   }`}
                 >
-                  {isAuthenticated ? (
+                  {isProcessing && selectedOfferId === offer.id ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span className="text-white">Processing...</span>
+                    </div>
+                  ) : isAuthenticated ? (
                     <span className="text-white">Get Started</span>
                   ) : (
                     <span className="text-white">Sign In To Select</span>
