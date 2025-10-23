@@ -38,8 +38,14 @@ A production-quality Next.js application showcasing student onboarding flows wit
 │       │   └── route.ts        # Mock API endpoint
 │       ├── students-signup/
 │       │   └── route.ts        # Students signup API
-│       └── curriculum-signup/
-│           └── route.ts        # Curriculum-specific email API
+│       ├── curriculum-signup/
+│       │   └── route.ts        # Curriculum-specific email API
+│       ├── catalog/
+│       │   └── route.ts        # GoDaddy Catalog API proxy
+│       ├── orders/
+│       │   └── route.ts        # GoDaddy Orders API proxy
+│       └── fulfillFree/
+│           └── route.ts        # GoDaddy FulfillFree API proxy
 ├── components/
 │   ├── Benefit.tsx             # Benefit card component
 │   ├── Alerts.tsx              # Success/error alert components
@@ -141,6 +147,34 @@ See `EMAIL_SETUP.md` for detailed configuration instructions including:
 - Environment variable setup
 - Testing and troubleshooting
 
+## 🔗 GoDaddy API Integration
+
+### Production API Proxies
+The application includes production-ready API proxies that connect to GoDaddy's internal services:
+
+#### **Authentication**
+- **JWT Token Management** - Secure token handling via `lib/auth.ts`
+- **SSO Integration** - Single Sign-On authentication with GoDaddy systems
+- **Customer ID Extraction** - Automatic customer identification from JWT tokens
+
+#### **API Endpoints**
+- **Catalog API** (`/api/catalog`) - Fetches available student offers and pricing
+- **Orders API** (`/api/orders`) - Creates student orders with basket management
+- **FulfillFree API** (`/api/fulfillFree`) - Fulfills free student orders automatically
+
+#### **Production Features**
+- **Idempotency** - Prevents duplicate orders with unique ID handling
+- **Error Handling** - Comprehensive error responses and logging
+- **Rate Limiting** - Built-in protection against API abuse
+- **Logging** - Detailed request/response logging for debugging
+
+#### **Environment Configuration**
+```bash
+# Required for GoDaddy API integration
+JWT_TOKEN=your-jwt-token
+API_BASE_URL=https://api.test.godaddy.com
+```
+
 ## 🔧 API Endpoints
 
 ### POST `/api/signup`
@@ -215,6 +249,80 @@ Curriculum-specific email sending API endpoint.
 - `hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential` → Web Design
 - `hackathonGoStudentsWebsiteSecurity-mwpBasic-nortonSmallBusinessStandard` → Website Security
 - `hackathonGoStudentsBusineesAi-wamCommerce-airoAllAccess` → Building Businesses with AI
+
+### POST `/api/catalog`
+GoDaddy Catalog API proxy for fetching available offers.
+
+**Request Body:**
+```json
+{
+  "rateForDisplay": true,
+  "filters": {
+    "offerIds": ["hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential"]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "offers": [
+    {
+      "id": "hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential",
+      "name": "Web Design Mastery",
+      "price": "$0.00",
+      "description": "Complete web design toolkit for students"
+    }
+  ]
+}
+```
+
+### POST `/api/orders`
+GoDaddy Orders API proxy for creating student orders.
+
+**Request Body:**
+```json
+{
+  "idempotentId": "unique-order-id",
+  "basketId": "basket-123",
+  "customerId": "104222",
+  "items": [
+    {
+      "offerId": "hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential",
+      "quantity": 1
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "orderId": "order-456",
+  "status": "created",
+  "customerId": "104222"
+}
+```
+
+### POST `/api/fulfillFree`
+GoDaddy FulfillFree API proxy for fulfilling free student orders.
+
+**Request Body:**
+```json
+{
+  "customerId": "104222",
+  "orderId": "order-456",
+  "idempotentId": "fulfill-789"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "fulfilled",
+  "orderId": "order-456",
+  "fulfillmentId": "fulfill-789"
+}
 
 ## 🎨 Design System
 
@@ -383,6 +491,21 @@ curl -X POST http://localhost:3000/api/students-signup \
 curl -X POST http://localhost:3000/api/curriculum-signup \
   -H "Content-Type: application/json" \
   -d '{"offerId":"hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential","schoolId":"asu","email":"test@asu.edu","customerId":"104222","shopperId":"9449896"}'
+
+# Test GoDaddy Catalog API
+curl -X POST http://localhost:3000/api/catalog \
+  -H "Content-Type: application/json" \
+  -d '{"rateForDisplay":true,"filters":{"offerIds":["hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential"]}}'
+
+# Test GoDaddy Orders API
+curl -X POST http://localhost:3000/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{"idempotentId":"test-order-123","basketId":"basket-456","customerId":"104222","items":[{"offerId":"hackathonGoStudentsWebDesign-webHostingEconomy-conversationsEssential","quantity":1}]}'
+
+# Test GoDaddy FulfillFree API
+curl -X POST http://localhost:3000/api/fulfillFree \
+  -H "Content-Type: application/json" \
+  -d '{"customerId":"104222","orderId":"order-456","idempotentId":"fulfill-789"}'
 ```
 
 ### Email Testing
@@ -432,9 +555,13 @@ curl -X POST http://localhost:3000/api/curriculum-signup \
 - [x] `/api/signup` - Accepts POST requests with JSON payload
 - [x] `/api/students-signup` - Students signup without email sending
 - [x] `/api/curriculum-signup` - Curriculum-specific email sending
+- [x] `/api/catalog` - GoDaddy Catalog API proxy for fetching offers
+- [x] `/api/orders` - GoDaddy Orders API proxy for creating orders
+- [x] `/api/fulfillFree` - GoDaddy FulfillFree API proxy for order fulfillment
 - [x] Supports query parameters for testing
 - [x] Returns appropriate success/error responses
 - [x] Implements configurable latency simulation
+- [x] JWT authentication integration with GoDaddy APIs
 
 ### ✅ Email System
 - [x] AI name parsing from email addresses
