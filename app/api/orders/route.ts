@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     // Try to extract customer ID from token, fallback to hardcoded value
     const extractedCustomerId = getCustomerIdFromToken(ssoAuth);
-    const customerId = extractedCustomerId || 'f8dcecf0-4ea0-42eb-8805-7bd63eecbbc4';
+    const customerId = extractedCustomerId || 'fac7def8-9ffe-4cdb-b524-53518027eabc';
     
     if (extractedCustomerId) {
       console.log('Using customer ID from token:', extractedCustomerId);

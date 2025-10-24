@@ -90,8 +90,8 @@ export default function StudentsPage() {
       console.log('Starting sign-up process...', { email, schoolId });
       
       // Use hardcoded values for testing
-      const customerId = 'f8dcecf0-4ea0-42eb-8805-7bd63eecbbc4';
-      const shopperId = '9869029';
+      const customerId = 'fac7def8-9ffe-4cdb-b524-53518027eabc';
+      const shopperId = '9869228';
       const authIdp = 'eyJhbGciOiAiUlMyNTYiLCAia2lkIjogIkN3elhURmE4REEifQ.eyJhdXRoIjogImJhc2ljIiwgImZ0YyI6IDEsICJpYXQiOiAxNzYxMjQ4MjY5LCAianRpIjogImhiNmx1MEtUek9kRFNnUGRUSFh0U2ciLCAidHlwIjogImlkcCIsICJ2YXQiOiAxNzYxMjQ4MjY5LCAiZXhwIjogMTc2MTI0ODU2OSwgImZhY3RvcnMiOiB7ImtfcHciOiAxNzYxMjQ4MjY5fSwgInBlciI6IHRydWUsICJoYmkiOiAxNzYxMjQ4MjY5LCAic2hvcHBlcklkIjogIjY3NDc5OTgiLCAiY2lkIjogIjNkZWQzN2M1LWI1M2UtNGRhMS04YWMzLWNmY2NiNjIzNjdlNCIsICJwbGlkIjogIjEiLCAicGx0IjogMSwgInNoYXJkIjogIjAwMDAiLCAiaWRlbnRpdHkiOiAiNmFkMWIyNGUtMTFmOS0xMWVkLWIyZTAtZTYxZWM1MTgxMmU3In0.QCE1jKXv6FQXAkIbZmj6aidK065yYaObZ6K8RSBQ7TClmUvPbgEtQsEzv-ecicoFXSbjV-jd4QURF5jAi89JrzxgvNQyCWPvsghnf4PWo204IaOlSPMYGiHqmzfJYhpPeXBN29sBrvVOge-aIDBZ5RJBleuyPLKI8YrRq_Ywcljqj-3SRWDXxoTP5rHNCe39WWkrEvuRgbLmOeWNGIA7nrf43bRL6fcMoRQx9sUBjBVKSTl7eE2mqP0uKY8Adm7XAi7Go7YCH9G7_BWzHYJzBiQ4NQqKyGBJXa248Qfo7UomnybG2SnApLPyyAo1UFmViwZWUuKOWwAVRTDtdrX83g';
       
       console.log('Using hardcoded values:', { customerId, shopperId });
